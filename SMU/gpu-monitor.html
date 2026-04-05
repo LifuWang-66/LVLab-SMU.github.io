@@ -1,854 +1,687 @@
 <!DOCTYPE html>
-<html lang="en-US">
+<html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="theme-color" content="#0f2d73">
-    <link rel="icon" href="../favicon.ico" sizes="any">
-    <link rel="icon" type="image/png" sizes="32x32" href="../favicon-32x32.png">
-    <link rel="apple-touch-icon" href="../apple-touch-icon.png">
-    <link rel="manifest" href="../site.webmanifest">
-    <title>GPU Monitor · LV-Lab @ SMU</title>
-
-    <link href="../css/bootstrap/bootstrap.min.css" rel="stylesheet">
-    <link href="../css/font-awesome.min.css" rel="stylesheet">
-    <link href="../assets/vendor/material-design-iconic-font/dist/css/material-design-iconic-font.min.css" rel="stylesheet">
-    <link href="../assets/css/theme.css" rel="stylesheet">
-    <style>
-        :root {
-            --lv-blue: #003d7c;
-            --lv-orange: #ee7023;
-            --lv-border: #dbe3ef;
-            --lv-bg: #f5f8fc;
-            --lv-card: #ffffff;
-            --lv-muted: #5d6c84;
-            --lv-danger: #c62828;
-            --lv-success: #2e7d32;
-        }
-
-        html,
-        body {
-            height: 100%;
-        }
-
-        body {
-            margin: 0;
-            background: var(--lv-bg);
-            color: #10223f;
-        }
-
-        .page-header {
-            background: var(--lv-blue);
-            color: #fff;
-            padding: 14px 0;
-            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.2);
-        }
-
-        .page-header a {
-            color: #fff;
-            text-decoration: underline;
-        }
-
-        .page-subtitle {
-            margin-top: 4px;
-            font-size: 0.92rem;
-            opacity: 0.88;
-        }
-
-        .app-shell {
-            padding: 24px 0 40px;
-        }
-
-        .monitor-card {
-            background: var(--lv-card);
-            border: 1px solid var(--lv-border);
-            border-radius: 12px;
-            box-shadow: 0 8px 24px rgba(16, 34, 63, 0.06);
-            margin-bottom: 18px;
-        }
-
-        .monitor-card .card-header {
-            border-bottom: 1px solid var(--lv-border);
-            background: #fafcff;
-            border-radius: 12px 12px 0 0;
-            padding: 14px 18px;
-        }
-
-        .monitor-card .card-title {
-            margin: 0;
-            font-size: 1rem;
-            font-weight: 700;
-        }
-
-        .monitor-card .card-body {
-            padding: 18px;
-        }
-
-        .table-wrap {
-            max-height: 340px;
-            overflow: auto;
-        }
-
-        .table thead th {
-            position: sticky;
-            top: 0;
-            z-index: 3;
-            background: #f0f4fb;
-        }
-
-        .api-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-            grid-gap: 14px;
-        }
-
-        .api-grid .form-group {
-            margin-bottom: 0;
-        }
-
-        .btn-primary {
-            background: var(--lv-blue);
-            border-color: var(--lv-blue);
-        }
-
-        .btn-primary:hover,
-        .btn-primary:focus {
-            background: #0d4f95;
-            border-color: #0d4f95;
-        }
-
-        .btn-danger {
-            background: var(--lv-danger);
-            border-color: var(--lv-danger);
-        }
-
-        .status-bar {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 10px;
-            align-items: center;
-        }
-
-        .status-pill {
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-            border-radius: 999px;
-            padding: 6px 12px;
-            background: #eef4ff;
-            color: #1d4580;
-            font-size: 0.86rem;
-            border: 1px solid #d6e5ff;
-        }
-
-        .status-pill .dot {
-            width: 8px;
-            height: 8px;
-            border-radius: 50%;
-            display: inline-block;
-            background: #91abd3;
-        }
-
-        .status-pill.online .dot {
-            background: var(--lv-success);
-        }
-
-        .status-pill.offline .dot {
-            background: var(--lv-danger);
-        }
-
-        .log-box {
-            background: #0f1f38;
-            color: #d7e5ff;
-            border-radius: 8px;
-            min-height: 200px;
-            max-height: 280px;
-            overflow: auto;
-            font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
-            font-size: 12px;
-            line-height: 1.45;
-            padding: 12px;
-            border: 1px solid #152e54;
-        }
-
-        .log-row {
-            margin-bottom: 4px;
-        }
-
-        .log-row:last-child {
-            margin-bottom: 0;
-        }
-
-        .muted-note {
-            font-size: 0.88rem;
-            color: var(--lv-muted);
-        }
-
-        .badge-soft {
-            background: #f2f6ff;
-            border: 1px solid #dce7ff;
-            color: #31558e;
-            font-weight: 500;
-            border-radius: 999px;
-            padding: 0.2rem 0.55rem;
-        }
-
-        @media (max-width: 768px) {
-            .page-header .container {
-                align-items: flex-start !important;
-                flex-direction: column;
-                gap: 6px;
-            }
-
-            .actions-inline {
-                flex-direction: column;
-                align-items: stretch !important;
-            }
-
-            .actions-inline .btn {
-                width: 100%;
-            }
-        }
-    </style>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#07111f">
+  <link rel="icon" href="../favicon.ico" sizes="any">
+  <link rel="icon" type="image/png" sizes="32x32" href="../favicon-32x32.png">
+  <link rel="apple-touch-icon" href="../apple-touch-icon.png">
+  <link rel="manifest" href="../site.webmanifest">
+  <title>GPU Monitor · LV-Lab @ SMU</title>
+  <style>
+    :root {
+      color-scheme: dark;
+      --bg: #07111f;
+      --panel: #0f1c2e;
+      --panel-alt: #14243a;
+      --border: #253752;
+      --text: #e8eef8;
+      --muted: #8ea6c9;
+      --accent: #5eead4;
+      --danger: #fb7185;
+      --success: #4ade80;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: linear-gradient(180deg, #07111f 0%, #0a1527 100%);
+      color: var(--text);
+    }
+    a { color: #7dd3fc; }
+    .page-header, .layout {
+      width: min(1320px, calc(100vw - 32px));
+      margin: 0 auto;
+    }
+    .page-header {
+      display: flex;
+      justify-content: space-between;
+      gap: 16px;
+      padding: 24px 0 16px;
+      align-items: flex-start;
+    }
+    .eyebrow { text-transform: uppercase; letter-spacing: .18em; color: var(--accent); font-size: 12px; margin-bottom: 8px; }
+    h1 { margin: 0 0 6px; font-size: 36px; }
+    h2 { margin: 0; }
+    .muted { color: var(--muted); }
+    .section-note { margin: 4px 0 0; }
+    .layout { display: grid; gap: 18px; padding-bottom: 40px; }
+    .panel {
+      background: rgba(15, 28, 46, .92);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 20px;
+      backdrop-filter: blur(12px);
+    }
+    .setup-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 12px; }
+    #access-form { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 12px; align-items: end; margin-top: 12px; }
+    label { display: grid; gap: 8px; color: var(--muted); font-size: 14px; }
+    input, select, button {
+      border-radius: 12px;
+      border: 1px solid var(--border);
+      background: var(--panel-alt);
+      color: var(--text);
+      padding: 12px 14px;
+      font-size: 14px;
+    }
+    button {
+      cursor: pointer;
+      background: linear-gradient(135deg, #22d3ee 0%, #14b8a6 100%);
+      color: #06202b;
+      font-weight: 700;
+    }
+    button.secondary { background: transparent; color: var(--text); }
+    .host-tags, .stat-grid { display: grid; gap: 12px; }
+    .host-tags { grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); margin-top: 14px; }
+    .host-tags span, .stat-tile, .gpu-card, .history-card, .server-section, .user-card {
+      background: var(--panel-alt);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 14px;
+    }
+    .server-section {
+      position: relative;
+      background: linear-gradient(180deg, rgba(20, 36, 58, 0.98) 0%, rgba(12, 24, 40, 0.98) 100%);
+      border: 1px solid rgba(94, 234, 212, 0.28);
+      box-shadow: 0 14px 32px rgba(0, 0, 0, 0.22);
+      padding: 12px;
+    }
+    .server-details { border: 1px solid rgba(94, 234, 212, 0.2); border-radius: 14px; overflow: hidden; }
+    .server-summary {
+      cursor: pointer;
+      list-style: none;
+      padding: 12px 14px;
+      background: rgba(94, 234, 212, 0.08);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+    .server-summary::-webkit-details-marker { display: none; }
+    .server-summary-main { font-weight: 700; margin-bottom: 0; }
+    .server-body { padding: 12px; }
+    .stat-grid { grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); margin-bottom: 16px; }
+    .stat-tile strong { display: block; font-size: 28px; margin-top: 10px; }
+    .server-stack { display: grid; gap: 14px; }
+    .section-title-row, .user-card-head { display: flex; justify-content: space-between; gap: 12px; align-items: center; }
+    .server-summary-list, .user-summary-list { display: flex; flex-wrap: wrap; gap: 8px; justify-content: flex-end; }
+    .server-summary-badge {
+      display: inline-flex;
+      border-radius: 999px;
+      padding: 6px 10px;
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--text);
+      background: rgba(94, 234, 212, 0.12);
+      border: 1px solid rgba(94, 234, 212, 0.24);
+    }
+    .server-card-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 12px;
+      margin-top: 12px;
+    }
+    .gpu-card, .history-card { display: flex; gap: 12px; align-items: stretch; }
+    .gpu-card-index {
+      writing-mode: vertical-rl;
+      transform: rotate(180deg);
+      font-weight: 800;
+      letter-spacing: 0.08em;
+      color: var(--accent);
+      border-right: 1px solid var(--border);
+      padding: 4px 8px 4px 2px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 28px;
+    }
+    .gpu-card-content { flex: 1; min-width: 0; }
+    .metric-row { display: flex; justify-content: space-between; gap: 12px; margin-top: 10px; color: var(--muted); }
+    .progress { margin-top: 8px; height: 8px; border-radius: 999px; background: rgba(142, 166, 201, 0.15); overflow: hidden; }
+    .progress > span { display: block; height: 100%; border-radius: inherit; background: linear-gradient(90deg, #22d3ee, #2dd4bf); }
+    .history-card ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; }
+    .history-card li { display: flex; justify-content: space-between; gap: 10px; color: var(--muted); }
+    .user-list { display: grid; gap: 12px; }
+    .user-details summary { cursor: pointer; color: var(--accent); margin-bottom: 8px; }
+    .table { width: 100%; border-collapse: collapse; }
+    .table th, .table td { padding: 10px 8px; border-bottom: 1px solid var(--border); text-align: left; vertical-align: top; }
+    .empty-state { color: var(--muted); min-height: 80px; display: grid; align-items: center; }
+    .error { color: var(--danger); margin-top: 8px; }
+    .success { color: var(--success); margin-top: 8px; }
+    @media (max-width: 900px) {
+      .page-header { flex-direction: column; }
+      .section-title-row { flex-direction: column; align-items: flex-start; }
+    }
+  </style>
 </head>
 <body>
-    <header class="page-header">
-        <div class="container d-flex justify-content-between align-items-center">
-            <div>
-                <strong>GPU Monitor</strong> · LV-Lab @ SMU
-                <div class="page-subtitle">Query GPU servers, monitor jobs, kill jobs, and send notification emails.</div>
-            </div>
-            <div>
-                <a href="./index.html">Back to LV-Lab @ SMU</a>
-            </div>
+  <header class="page-header">
+    <div>
+      <p class="eyebrow">GPU Monitor</p>
+      <h1>GPU Monitor Dashboard</h1>
+      <p class="muted">Replicated from GPUMonitor-main.zip. <a href="./index.html">Back to LV-Lab @ SMU</a>.</p>
+    </div>
+  </header>
+
+  <main class="layout">
+    <section class="panel auth-panel">
+      <h2>Backend Configuration</h2>
+      <p class="muted">Set the API base URL first (e.g. <code>https://your-monitor.example.com</code>). Saved in browser local storage.</p>
+      <div class="setup-grid">
+        <label>API Base URL
+          <input id="api-base-url" type="url" placeholder="https://gpu-monitor-api.example.com">
+        </label>
+        <label>Optional Bearer Token
+          <input id="api-token" type="password" placeholder="token">
+        </label>
+      </div>
+      <div style="display:flex; gap:10px; margin-top:10px;">
+        <button type="button" id="save-config">Save Config</button>
+        <button type="button" class="secondary" id="clear-config">Reset Config</button>
+      </div>
+      <div id="config-msg" class="muted"></div>
+    </section>
+
+    <section class="panel auth-panel">
+      <h2>Access Check</h2>
+      <p>Enter your Linux account. The system validates host access and only shows data for allowed hosts.</p>
+      <form id="access-form">
+        <label>Username
+          <input name="username" required placeholder="e.g. jinyang">
+        </label>
+        <label>Email
+          <input name="email" type="email" placeholder="Required first time">
+        </label>
+        <label>Password
+          <input name="password" type="password" placeholder="Leave empty if key-based auth is set">
+        </label>
+        <button type="submit">Validate and enter dashboard</button>
+      </form>
+      <div id="access-message" class="muted"></div>
+      <div id="host-tags" class="host-tags"></div>
+    </section>
+
+    <section class="panel overview-panel">
+      <div class="section-title-row">
+        <div>
+          <h2>Current Status</h2>
+          <p class="muted section-note">Hosts are shown as collapsible groups with model/memory/cards summary.</p>
         </div>
-    </header>
+        <button id="refresh-button" class="secondary">Refresh current status</button>
+      </div>
+      <div id="status-summary" class="stat-grid"></div>
+      <div id="current-gpu-grid" class="server-stack empty-state">Please complete access validation first.</div>
+    </section>
 
-    <main class="app-shell">
-        <div class="container">
-            <section class="monitor-card" aria-labelledby="conn-title">
-                <div class="card-header d-flex justify-content-between align-items-center flex-wrap">
-                    <h1 id="conn-title" class="card-title">Connection & API Configuration</h1>
-                    <span class="badge-soft">Saved in local browser storage</span>
-                </div>
-                <div class="card-body">
-                    <div class="api-grid">
-                        <div class="form-group">
-                            <label for="base-url">Backend Base URL</label>
-                            <input type="url" class="form-control" id="base-url" placeholder="https://gpu-monitor-api.example.com" />
-                        </div>
-                        <div class="form-group">
-                            <label for="api-token">API Token / Bearer Token (optional)</label>
-                            <input type="password" class="form-control" id="api-token" placeholder="token value" autocomplete="off" />
-                        </div>
-                        <div class="form-group">
-                            <label for="status-path">Server Status Path</label>
-                            <input type="text" class="form-control" id="status-path" value="/api/server-status" />
-                        </div>
-                        <div class="form-group">
-                            <label for="jobs-path">Jobs Query Path</label>
-                            <input type="text" class="form-control" id="jobs-path" value="/api/jobs" />
-                        </div>
-                        <div class="form-group">
-                            <label for="kill-path">Kill Job Path</label>
-                            <input type="text" class="form-control" id="kill-path" value="/api/jobs/kill" />
-                        </div>
-                        <div class="form-group">
-                            <label for="mail-path">Send Email Path</label>
-                            <input type="text" class="form-control" id="mail-path" value="/api/email/send" />
-                        </div>
-                    </div>
-                    <div class="d-flex mt-3 actions-inline" style="gap: 10px;">
-                        <button class="btn btn-primary" id="save-config-btn" type="button">Save Configuration</button>
-                        <button class="btn btn-outline-secondary" id="reset-config-btn" type="button">Reset to Defaults</button>
-                    </div>
-                    <div class="muted-note mt-2">Tip: Use this page with your GPUMonitor backend endpoint to enable all actions.</div>
-                </div>
-            </section>
-
-            <section class="monitor-card" aria-labelledby="server-title">
-                <div class="card-header d-flex justify-content-between align-items-center flex-wrap">
-                    <h2 id="server-title" class="card-title">GPU Server Status</h2>
-                    <div class="status-bar">
-                        <span class="status-pill" id="status-summary-pill"><span class="dot"></span><span id="status-summary-text">No server data yet</span></span>
-                        <button class="btn btn-primary btn-sm" id="query-servers-btn" type="button"><i class="zmdi zmdi-refresh mr-1"></i>Query GPU Servers</button>
-                    </div>
-                </div>
-                <div class="card-body">
-                    <div class="table-wrap">
-                        <table class="table table-sm table-striped table-bordered mb-0" aria-describedby="server-title">
-                            <thead>
-                                <tr>
-                                    <th>Server</th>
-                                    <th>Status</th>
-                                    <th>GPU Utilization</th>
-                                    <th>Memory Usage</th>
-                                    <th>Temp</th>
-                                    <th>Running Jobs</th>
-                                    <th>Action</th>
-                                </tr>
-                            </thead>
-                            <tbody id="servers-table-body">
-                                <tr>
-                                    <td colspan="7" class="text-muted text-center">No data. Click "Query GPU Servers" to load.</td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </section>
-
-            <section class="monitor-card" aria-labelledby="jobs-title">
-                <div class="card-header d-flex justify-content-between align-items-center flex-wrap">
-                    <h2 id="jobs-title" class="card-title">Job Management</h2>
-                    <div class="d-flex align-items-center" style="gap: 10px;">
-                        <label for="jobs-server-input" class="mb-0 text-nowrap">Server</label>
-                        <input id="jobs-server-input" class="form-control form-control-sm" style="min-width: 200px;" placeholder="e.g. gpu-server-01" />
-                        <button class="btn btn-primary btn-sm" id="query-jobs-btn" type="button">Query Jobs</button>
-                    </div>
-                </div>
-                <div class="card-body">
-                    <div class="table-wrap mb-3">
-                        <table class="table table-sm table-hover table-bordered mb-0" aria-describedby="jobs-title">
-                            <thead>
-                                <tr>
-                                    <th>Job ID</th>
-                                    <th>User</th>
-                                    <th>Server</th>
-                                    <th>GPU</th>
-                                    <th>Process</th>
-                                    <th>Status</th>
-                                    <th>Started</th>
-                                    <th>Action</th>
-                                </tr>
-                            </thead>
-                            <tbody id="jobs-table-body">
-                                <tr>
-                                    <td colspan="8" class="text-muted text-center">No job data. Query jobs for a server.</td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-
-                    <div class="row">
-                        <div class="col-lg-6">
-                            <h3 class="h6">Kill Job (Manual)</h3>
-                            <div class="form-group">
-                                <label for="kill-server-input">Server</label>
-                                <input type="text" class="form-control" id="kill-server-input" placeholder="e.g. gpu-server-01" />
-                            </div>
-                            <div class="form-group">
-                                <label for="kill-jobid-input">Job ID / PID</label>
-                                <input type="text" class="form-control" id="kill-jobid-input" placeholder="e.g. 12345" />
-                            </div>
-                            <button class="btn btn-danger" id="kill-job-btn" type="button">Kill Job</button>
-                        </div>
-                        <div class="col-lg-6">
-                            <h3 class="h6">Email Notification</h3>
-                            <div class="form-group">
-                                <label for="mail-to-input">To</label>
-                                <input type="text" class="form-control" id="mail-to-input" placeholder="user1@smu.edu.sg,user2@smu.edu.sg" />
-                            </div>
-                            <div class="form-group">
-                                <label for="mail-subject-input">Subject</label>
-                                <input type="text" class="form-control" id="mail-subject-input" placeholder="GPU Alert" />
-                            </div>
-                            <div class="form-group">
-                                <label for="mail-body-input">Message</label>
-                                <textarea class="form-control" id="mail-body-input" rows="3" placeholder="GPU monitor message..."></textarea>
-                            </div>
-                            <button class="btn btn-primary" id="send-mail-btn" type="button">Send Email</button>
-                        </div>
-                    </div>
-                </div>
-            </section>
-
-            <section class="monitor-card" aria-labelledby="log-title">
-                <div class="card-header d-flex justify-content-between align-items-center">
-                    <h2 id="log-title" class="card-title">Activity Log</h2>
-                    <button class="btn btn-sm btn-outline-light" id="clear-log-btn" type="button" style="color:#10223f;border-color:#b6c7e4;">Clear</button>
-                </div>
-                <div class="card-body">
-                    <div id="log-box" class="log-box" role="status" aria-live="polite"></div>
-                </div>
-            </section>
+    <section class="panel history-panel">
+      <div class="section-title-row">
+        <div>
+          <h2>History</h2>
+          <p class="muted section-note">View host-level GPU history in collapsible groups.</p>
         </div>
-    </main>
+        <div>
+          <label>Time range
+            <select id="window-select">
+              <option value="7">7 days</option>
+              <option value="14">14 days</option>
+              <option value="20">20 days</option>
+              <option value="30" selected>30 days</option>
+            </select>
+          </label>
+        </div>
+      </div>
+      <div id="gpu-history-grid" class="server-stack empty-state">After login, GPU history loads automatically.</div>
+    </section>
 
-    <script>
-        (function () {
-            'use strict';
+    <section class="panel users-panel">
+      <h2>User GPU Usage</h2>
+      <p class="muted section-note">Default shows current user; admins can view all users.</p>
+      <div id="user-table-wrapper" class="empty-state">User aggregates will appear after login.</div>
+      <div style="display:flex; gap:10px; margin-top:12px;">
+        <button type="button" id="logout-button" class="secondary">Sign out</button>
+      </div>
+    </section>
+  </main>
 
-            var STORAGE_KEY = 'lvlab.gpu.monitor.config.v1';
-            var DEFAULT_CONFIG = {
-                baseUrl: '',
-                token: '',
-                statusPath: '/api/server-status',
-                jobsPath: '/api/jobs',
-                killPath: '/api/jobs/kill',
-                mailPath: '/api/email/send'
+  <template id="gpu-card-template">
+    <article class="gpu-card">
+      <div class="gpu-card-index"></div>
+      <div class="gpu-card-content">
+        <div class="metrics"></div>
+      </div>
+    </article>
+  </template>
+
+  <script>
+    (function () {
+      'use strict';
+
+      var STORAGE_KEY = 'lvlab.gpu.monitor.replica.v1';
+      var DEFAULT_HOSTS = [
+        { name: 'host-1', address: 'gpu1.example.com' },
+        { name: 'host-2', address: 'gpu2.example.com' },
+        { name: 'host-3', address: 'gpu3.example.com' },
+        { name: 'host-4', address: 'gpu4.example.com' },
+        { name: 'host-5', address: 'gpu5.example.com' }
+      ];
+
+      var state = {
+        username: '',
+        accessibleHosts: [],
+        hostAliases: DEFAULT_HOSTS
+      };
+
+      var currentGrid = document.getElementById('current-gpu-grid');
+      var statusSummary = document.getElementById('status-summary');
+      var gpuHistoryGrid = document.getElementById('gpu-history-grid');
+      var userTableWrapper = document.getElementById('user-table-wrapper');
+      var windowSelect = document.getElementById('window-select');
+      var refreshButton = document.getElementById('refresh-button');
+      var logoutButton = document.getElementById('logout-button');
+      var accessForm = document.getElementById('access-form');
+      var accessMessage = document.getElementById('access-message');
+      var hostTags = document.getElementById('host-tags');
+      var configMsg = document.getElementById('config-msg');
+
+      function getConfig() {
+        var saved;
+        try {
+          saved = JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}');
+        } catch (err) {
+          saved = {};
+        }
+        return {
+          baseUrl: (saved.baseUrl || '').trim().replace(/\/$/, ''),
+          token: (saved.token || '').trim()
+        };
+      }
+
+      function setConfig(config) {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(config));
+      }
+
+      function apiUrl(path) {
+        var config = getConfig();
+        if (!config.baseUrl) {
+          throw new Error('Please set API Base URL first.');
+        }
+        return config.baseUrl + path;
+      }
+
+      function authHeaders(extra) {
+        var config = getConfig();
+        var headers = Object.assign({}, extra || {});
+        if (config.token) {
+          headers.Authorization = 'Bearer ' + config.token;
+        }
+        return headers;
+      }
+
+      function renderHostTags(hosts) {
+        hostTags.innerHTML = '';
+        hosts.forEach(function (host) {
+          var span = document.createElement('span');
+          span.textContent = host.name + ' · ' + host.address;
+          hostTags.appendChild(span);
+        });
+      }
+
+      function metricRow(label, value, progress) {
+        var wrapper = document.createElement('div');
+        wrapper.innerHTML = '<div class="metric-row"><span>' + label + '</span><strong>' + value + '</strong></div>';
+        if (typeof progress === 'number') {
+          var bar = document.createElement('div');
+          bar.className = 'progress';
+          bar.innerHTML = '<span style="width:' + Math.min(progress, 100) + '%"></span>';
+          wrapper.appendChild(bar);
+        }
+        return wrapper;
+      }
+
+      function groupByHost(items) {
+        return items.reduce(function (acc, item) {
+          var key = String(item.host_address || item.host || 'unknown');
+          if (!acc[key]) {
+            acc[key] = {
+              hostName: item.host_name || item.host || key,
+              hostAddress: item.host_address || key,
+              items: []
             };
+          }
+          acc[key].items.push(item);
+          return acc;
+        }, {});
+      }
 
-            var state = {
-                servers: [],
-                jobs: []
-            };
+      function mbToGb(mb) { return (mb / 1024).toFixed(1); }
+      function normalizeGpuModel(name) {
+        var raw = (name || '').trim();
+        var upper = raw.toUpperCase();
+        if (upper.indexOf('RTX PRO 6000') !== -1) return 'NVIDIA RTX Pro 6000';
+        if (upper.indexOf('L40S') !== -1) return 'NVIDIA L40S';
+        return raw || 'Unknown model';
+      }
+      function officialMemoryByModel(model) {
+        var upper = model.toUpperCase();
+        if (upper.indexOf('RTX PRO 6000') !== -1) return 96;
+        if (upper.indexOf('L40S') !== -1) return 48;
+        return null;
+      }
 
-            var els = {
-                baseUrl: document.getElementById('base-url'),
-                apiToken: document.getElementById('api-token'),
-                statusPath: document.getElementById('status-path'),
-                jobsPath: document.getElementById('jobs-path'),
-                killPath: document.getElementById('kill-path'),
-                mailPath: document.getElementById('mail-path'),
-                saveConfigBtn: document.getElementById('save-config-btn'),
-                resetConfigBtn: document.getElementById('reset-config-btn'),
-                queryServersBtn: document.getElementById('query-servers-btn'),
-                serversTableBody: document.getElementById('servers-table-body'),
-                statusSummaryPill: document.getElementById('status-summary-pill'),
-                statusSummaryText: document.getElementById('status-summary-text'),
-                jobsServerInput: document.getElementById('jobs-server-input'),
-                queryJobsBtn: document.getElementById('query-jobs-btn'),
-                jobsTableBody: document.getElementById('jobs-table-body'),
-                killServerInput: document.getElementById('kill-server-input'),
-                killJobidInput: document.getElementById('kill-jobid-input'),
-                killJobBtn: document.getElementById('kill-job-btn'),
-                mailToInput: document.getElementById('mail-to-input'),
-                mailSubjectInput: document.getElementById('mail-subject-input'),
-                mailBodyInput: document.getElementById('mail-body-input'),
-                sendMailBtn: document.getElementById('send-mail-btn'),
-                logBox: document.getElementById('log-box'),
-                clearLogBtn: document.getElementById('clear-log-btn')
-            };
+      function getHostSummary(cards) {
+        var totalCards = cards.length;
+        var hasProcessCount = cards.some(function (card) { return typeof card.process_count === 'number'; });
+        var busyCards = hasProcessCount
+          ? cards.filter(function (card) { return (card.process_count || 0) > 0; }).length
+          : cards.filter(function (card) { return (card.occupancy_rate || 0) > 0; }).length;
+        var modelSet = {};
+        cards.forEach(function (card) { modelSet[normalizeGpuModel(card.gpu_name)] = true; });
+        var models = Object.keys(modelSet);
+        var modelLabel = models.length === 1 ? models[0] : 'Mixed (' + models.length + ')';
+        var officialMemory = models.length === 1 ? officialMemoryByModel(modelLabel) : null;
+        var memoryTotals = cards.map(function (card) { return card.memory_total_mb; }).filter(Boolean);
+        var sameMemory = memoryTotals.every(function (v) { return v === memoryTotals[0]; });
+        var memoryLabel = officialMemory
+          ? (officialMemory + ' GB/card')
+          : (memoryTotals.length && sameMemory ? (mbToGb(memoryTotals[0]) + ' GB/card') : 'Mixed specs');
+        return { totalCards: totalCards, busyCards: busyCards, modelLabel: modelLabel, memoryLabel: memoryLabel };
+      }
 
-            function nowString() {
-                return new Date().toLocaleString();
-            }
+      function getHistoryHostSummary(cards) {
+        var totalCards = cards.length;
+        var modelSet = {};
+        cards.forEach(function (card) { modelSet[normalizeGpuModel(card.gpu_name)] = true; });
+        var models = Object.keys(modelSet);
+        var modelLabel = models.length === 1 ? models[0] : 'Mixed (' + models.length + ')';
+        var officialMemory = models.length === 1 ? officialMemoryByModel(modelLabel) : null;
+        var memoryLabel = officialMemory ? (officialMemory + ' GB/card') : '--';
+        return { totalCards: totalCards, modelLabel: modelLabel, memoryLabel: memoryLabel };
+      }
 
-            function addLog(message, level) {
-                var classSuffix = level ? ' [' + level.toUpperCase() + ']' : '';
-                var row = document.createElement('div');
-                row.className = 'log-row';
-                row.textContent = '[' + nowString() + ']' + classSuffix + ' ' + message;
-                els.logBox.appendChild(row);
-                els.logBox.scrollTop = els.logBox.scrollHeight;
-            }
+      function renderSummary(cards) {
+        statusSummary.innerHTML = '';
+        var total = cards.length;
+        var busy = cards.filter(function (card) { return (card.process_count || 0) > 0; }).length;
+        var idle = cards.filter(function (card) { return card.is_idle; }).length;
+        var sum = cards.reduce(function (acc, card) { return acc + (card.utilization_gpu || 0); }, 0);
+        var avgUtil = total ? (sum / total).toFixed(1) : '0.0';
+        [['Total GPUs', total], ['Busy', busy], ['Idle', idle], ['Avg util', avgUtil + '%']].forEach(function (pair) {
+          var tile = document.createElement('div');
+          tile.className = 'stat-tile';
+          tile.innerHTML = '<span>' + pair[0] + '</span><strong>' + pair[1] + '</strong>';
+          statusSummary.appendChild(tile);
+        });
+      }
 
-            function getConfigFromUI() {
-                return {
-                    baseUrl: (els.baseUrl.value || '').trim().replace(/\/$/, ''),
-                    token: (els.apiToken.value || '').trim(),
-                    statusPath: normalizePath(els.statusPath.value || DEFAULT_CONFIG.statusPath),
-                    jobsPath: normalizePath(els.jobsPath.value || DEFAULT_CONFIG.jobsPath),
-                    killPath: normalizePath(els.killPath.value || DEFAULT_CONFIG.killPath),
-                    mailPath: normalizePath(els.mailPath.value || DEFAULT_CONFIG.mailPath)
-                };
-            }
+      function buildGpuCardNode(card) {
+        var template = document.getElementById('gpu-card-template');
+        var fragment = template.content.cloneNode(true);
+        fragment.querySelector('.gpu-card-index').textContent = 'GPU ' + card.gpu_index;
+        var metrics = fragment.querySelector('.metrics');
+        metrics.appendChild(metricRow('GPU util', (Number(card.utilization_gpu || 0)).toFixed(1) + '%', Number(card.utilization_gpu || 0)));
+        var memoryPercent = card.memory_total_mb ? (card.memory_used_mb / card.memory_total_mb) * 100 : 0;
+        metrics.appendChild(metricRow('Memory', Number(card.memory_used_mb || 0).toFixed(0) + ' / ' + Number(card.memory_total_mb || 0).toFixed(0) + ' MB', memoryPercent));
+        metrics.appendChild(metricRow('Active users', (card.active_users && card.active_users.length) ? card.active_users.join(', ') : 'None'));
+        return fragment;
+      }
 
-            function normalizePath(path) {
-                var trimmed = (path || '').trim();
-                if (!trimmed) {
-                    return '/';
-                }
-                return trimmed.charAt(0) === '/' ? trimmed : '/' + trimmed;
-            }
+      function renderCurrent(cards) {
+        currentGrid.innerHTML = '';
+        if (!cards.length) {
+          currentGrid.textContent = 'No current data yet. Complete access validation first.';
+          currentGrid.classList.add('empty-state');
+          return;
+        }
+        currentGrid.classList.remove('empty-state');
+        renderSummary(cards);
+        var grouped = groupByHost(cards);
+        Object.keys(grouped).forEach(function (key) {
+          var group = grouped[key];
+          var summary = getHostSummary(group.items);
+          var section = document.createElement('section');
+          section.className = 'server-section';
+          section.innerHTML =
+            '<details class="server-details">' +
+              '<summary class="server-summary">' +
+                '<div class="server-summary-main">' + group.hostName + ' · ' + group.hostAddress + '</div>' +
+                '<div class="server-summary-list">' +
+                  '<span class="server-summary-badge">Model: ' + summary.modelLabel + '</span>' +
+                  '<span class="server-summary-badge">Memory: ' + summary.memoryLabel + '</span>' +
+                  '<span class="server-summary-badge">Cards: ' + summary.totalCards + '</span>' +
+                  '<span class="server-summary-badge">Busy: ' + summary.busyCards + '</span>' +
+                '</div>' +
+              '</summary>' +
+              '<div class="server-body"><div class="server-card-grid"></div></div>' +
+            '</details>';
+          var grid = section.querySelector('.server-card-grid');
+          group.items.sort(function (a, b) { return (a.gpu_index || 0) - (b.gpu_index || 0); }).forEach(function (card) {
+            grid.appendChild(buildGpuCardNode(card));
+          });
+          currentGrid.appendChild(section);
+        });
+      }
 
-            function setConfigToUI(config) {
-                els.baseUrl.value = config.baseUrl || '';
-                els.apiToken.value = config.token || '';
-                els.statusPath.value = config.statusPath || DEFAULT_CONFIG.statusPath;
-                els.jobsPath.value = config.jobsPath || DEFAULT_CONFIG.jobsPath;
-                els.killPath.value = config.killPath || DEFAULT_CONFIG.killPath;
-                els.mailPath.value = config.mailPath || DEFAULT_CONFIG.mailPath;
-            }
+      function renderGpuHistory(items) {
+        gpuHistoryGrid.innerHTML = '';
+        if (!items.length) {
+          gpuHistoryGrid.textContent = 'No historical aggregates yet.';
+          gpuHistoryGrid.classList.add('empty-state');
+          return;
+        }
+        gpuHistoryGrid.classList.remove('empty-state');
+        var grouped = groupByHost(items);
+        Object.keys(grouped).forEach(function (key) {
+          var group = grouped[key];
+          var summary = getHistoryHostSummary(group.items);
+          var section = document.createElement('section');
+          section.className = 'server-section';
+          section.innerHTML =
+            '<details class="server-details">' +
+              '<summary class="server-summary">' +
+                '<div class="server-summary-main">' + group.hostName + ' · ' + group.hostAddress + '</div>' +
+                '<div class="server-summary-list">' +
+                  '<span class="server-summary-badge">Model: ' + summary.modelLabel + '</span>' +
+                  '<span class="server-summary-badge">Memory: ' + summary.memoryLabel + '</span>' +
+                  '<span class="server-summary-badge">Cards: ' + summary.totalCards + '</span>' +
+                '</div>' +
+              '</summary>' +
+              '<div class="server-body"><div class="server-card-grid"></div></div>' +
+            '</details>';
 
-            function saveConfig() {
-                var config = getConfigFromUI();
-                localStorage.setItem(STORAGE_KEY, JSON.stringify(config));
-                addLog('Configuration saved to localStorage.', 'info');
-            }
+          var grid = section.querySelector('.server-card-grid');
+          group.items.sort(function (a, b) { return (a.gpu_index || 0) - (b.gpu_index || 0); }).forEach(function (item) {
+            var card = document.createElement('article');
+            card.className = 'history-card';
+            card.innerHTML =
+              '<div class="gpu-card-index">GPU ' + item.gpu_index + '</div>' +
+              '<div class="gpu-card-content"><ul>' +
+                '<li><span>Occupancy</span><strong>' + item.occupancy_rate + '%</strong></li>' +
+                '<li><span>Effective utilization</span><strong>' + item.effective_utilization_rate + '%</strong></li>' +
+                '<li><span>Avg GPU util</span><strong>' + item.average_gpu_utilization + '%</strong></li>' +
+                '<li><span>Avg memory</span><strong>' + item.average_memory_used_mb + ' MB</strong></li>' +
+              '</ul></div>';
+            grid.appendChild(card);
+          });
+          gpuHistoryGrid.appendChild(section);
+        });
+      }
 
-            function loadConfig() {
-                var parsed;
-                try {
-                    parsed = JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}');
-                } catch (err) {
-                    parsed = {};
-                }
-                var merged = Object.assign({}, DEFAULT_CONFIG, parsed);
-                setConfigToUI(merged);
-                return merged;
-            }
+      function renderUsers(items) {
+        userTableWrapper.innerHTML = '';
+        if (!items.length) {
+          userTableWrapper.textContent = 'No user aggregates yet.';
+          userTableWrapper.classList.add('empty-state');
+          return;
+        }
+        userTableWrapper.classList.remove('empty-state');
+        var wrapper = document.createElement('div');
+        wrapper.className = 'user-list';
+        items.forEach(function (item) {
+          var block = document.createElement('article');
+          block.className = 'user-card';
+          var rows = (item.server_breakdown || []).map(function (server) {
+            return '<tr><td>' + (server.gpu_type || 'Unknown model') + '</td><td>' + server.gpu_hours + ' h</td><td>' + server.daily_average_gpu_hours + ' h</td><td>' + server.non_idle_hours + ' h</td><td>' + server.average_gpu_utilization + '%</td></tr>';
+          }).join('');
+          block.innerHTML =
+            '<div class="user-card-head">' +
+              '<div><h3>' + item.username + '</h3><p class="muted">GPU types: ' + (item.server_breakdown || []).map(function (s) { return s.gpu_type || 'Unknown model'; }).join(', ') + '</p></div>' +
+              '<div class="user-summary-list">' +
+                '<span class="server-summary-badge">Total: ' + item.gpu_hours + ' h</span>' +
+                '<span class="server-summary-badge">Daily avg: ' + item.daily_average_gpu_hours + ' h</span>' +
+                '<span class="server-summary-badge">Non-idle: ' + item.non_idle_hours + ' h</span>' +
+                '<span class="server-summary-badge">Avg util: ' + item.average_gpu_utilization + '%</span>' +
+              '</div>' +
+            '</div>' +
+            '<details class="user-details"><summary>View per-host details</summary>' +
+              '<table class="table"><thead><tr><th>GPU type</th><th>GPU hours</th><th>Daily avg hours</th><th>Non-idle hours</th><th>Avg util</th></tr></thead><tbody>' + rows + '</tbody></table>' +
+            '</details>';
+          wrapper.appendChild(block);
+        });
+        userTableWrapper.appendChild(wrapper);
+      }
 
-            function resetConfig() {
-                setConfigToUI(DEFAULT_CONFIG);
-                localStorage.removeItem(STORAGE_KEY);
-                addLog('Configuration reset to defaults.', 'warn');
-            }
+      async function fetchJson(path, options) {
+        var response = await fetch(apiUrl(path), Object.assign({
+          credentials: 'include',
+          headers: authHeaders((options && options.headers) || {})
+        }, options || {}));
+        if (!response.ok) {
+          var detail = await response.text();
+          throw new Error(detail || ('Request failed: ' + response.status));
+        }
+        return response.json();
+      }
 
-            function headersWithAuth(config) {
-                var headers = {
-                    'Content-Type': 'application/json'
-                };
-                if (config.token) {
-                    headers.Authorization = 'Bearer ' + config.token;
-                }
-                return headers;
-            }
+      async function refreshAll() {
+        if (!state.accessibleHosts.length) {
+          return;
+        }
+        var windowDays = Number(windowSelect.value);
+        var results = await Promise.all([
+          fetchJson('/api/status/current'),
+          fetchJson('/api/history/gpus?days=' + windowDays),
+          fetchJson('/api/history/users?days=' + windowDays)
+        ]);
+        renderCurrent(results[0]);
+        renderGpuHistory(results[1]);
+        renderUsers(results[2]);
+      }
 
-            function endpoint(config, path) {
-                if (!config.baseUrl) {
-                    throw new Error('Please provide Backend Base URL first.');
-                }
-                return config.baseUrl + path;
-            }
+      function setMessage(node, msg, cls) {
+        node.className = cls || 'muted';
+        node.textContent = msg;
+      }
 
-            function withButtonLoading(btn, fn) {
-                var originalText = btn.innerHTML;
-                btn.disabled = true;
-                btn.innerHTML = '<i class="zmdi zmdi-spinner zmdi-hc-spin mr-1"></i>Working...';
-                return Promise.resolve()
-                    .then(fn)
-                    .finally(function () {
-                        btn.disabled = false;
-                        btn.innerHTML = originalText;
-                    });
-            }
+      document.getElementById('save-config').addEventListener('click', function () {
+        var baseUrl = document.getElementById('api-base-url').value.trim().replace(/\/$/, '');
+        var token = document.getElementById('api-token').value.trim();
+        setConfig({ baseUrl: baseUrl, token: token });
+        setMessage(configMsg, 'Configuration saved.', 'success');
+      });
 
-            function parseServerArray(responseJson) {
-                if (Array.isArray(responseJson)) {
-                    return responseJson;
-                }
-                if (responseJson && Array.isArray(responseJson.data)) {
-                    return responseJson.data;
-                }
-                if (responseJson && Array.isArray(responseJson.servers)) {
-                    return responseJson.servers;
-                }
-                return [];
-            }
+      document.getElementById('clear-config').addEventListener('click', function () {
+        localStorage.removeItem(STORAGE_KEY);
+        document.getElementById('api-base-url').value = '';
+        document.getElementById('api-token').value = '';
+        setMessage(configMsg, 'Configuration reset.', 'muted');
+      });
 
-            function parseJobArray(responseJson) {
-                if (Array.isArray(responseJson)) {
-                    return responseJson;
-                }
-                if (responseJson && Array.isArray(responseJson.data)) {
-                    return responseJson.data;
-                }
-                if (responseJson && Array.isArray(responseJson.jobs)) {
-                    return responseJson.jobs;
-                }
-                return [];
-            }
+      accessForm.addEventListener('submit', async function (event) {
+        event.preventDefault();
+        var formData = new FormData(accessForm);
+        var username = (formData.get('username') || '').toString().trim();
+        if (!username) {
+          setMessage(accessMessage, 'Username is required.', 'error');
+          return;
+        }
 
-            function renderServers(servers) {
-                state.servers = servers;
-                if (!servers.length) {
-                    els.serversTableBody.innerHTML = '<tr><td colspan="7" class="text-muted text-center">No servers returned from API.</td></tr>';
-                    els.statusSummaryText.textContent = 'No online servers detected';
-                    els.statusSummaryPill.classList.remove('online');
-                    els.statusSummaryPill.classList.add('offline');
-                    return;
-                }
+        var payload = {
+          username: username,
+          email: (formData.get('email') || '').toString().trim() || null,
+          password: (formData.get('password') || '').toString() || null,
+          use_agent: false
+        };
 
-                var onlineCount = 0;
-                var rows = servers.map(function (server) {
-                    var name = server.server || server.host || server.name || '-';
-                    var statusRaw = String(server.status || server.state || '').toLowerCase();
-                    var isOnline = statusRaw.indexOf('up') !== -1 || statusRaw.indexOf('online') !== -1 || statusRaw.indexOf('ok') !== -1;
-                    if (isOnline) {
-                        onlineCount += 1;
-                    }
-                    var gpuUtil = server.gpu_util || server.gpuUtil || server.utilization || '-';
-                    var mem = server.memory || server.memory_usage || server.gpu_memory || '-';
-                    var temp = server.temp || server.temperature || '-';
-                    var jobs = server.running_jobs || server.jobs || server.job_count || '-';
-                    return '' +
-                        '<tr>' +
-                        '<td>' + escapeHtml(name) + '</td>' +
-                        '<td>' + badgeForStatus(statusRaw || 'unknown') + '</td>' +
-                        '<td>' + escapeHtml(String(gpuUtil)) + '</td>' +
-                        '<td>' + escapeHtml(String(mem)) + '</td>' +
-                        '<td>' + escapeHtml(String(temp)) + '</td>' +
-                        '<td>' + escapeHtml(String(jobs)) + '</td>' +
-                        '<td><button class="btn btn-sm btn-outline-primary" data-action="fetch-jobs" data-server="' + encodeURIComponent(name) + '">Query Jobs</button></td>' +
-                        '</tr>';
-                }).join('');
+        try {
+          var hosts = await fetchJson('/api/session/access', {
+            method: 'POST',
+            headers: authHeaders({ 'Content-Type': 'application/json' }),
+            body: JSON.stringify(payload)
+          });
+          state.username = username;
+          state.hostAliases = hosts.map(function (item) {
+            return { name: item.name, address: item.address };
+          });
+          state.accessibleHosts = hosts.filter(function (h) { return h.accessible; }).map(function (h) { return h.address; });
+          renderHostTags(state.hostAliases);
+          setMessage(accessMessage, 'Access validated. Loading dashboard data...', 'success');
+          await refreshAll();
+        } catch (error) {
+          setMessage(accessMessage, 'Access validation failed: ' + error.message, 'error');
+        }
+      });
 
-                els.serversTableBody.innerHTML = rows;
-                els.statusSummaryText.textContent = onlineCount + ' / ' + servers.length + ' online';
-                els.statusSummaryPill.classList.toggle('online', onlineCount > 0);
-                els.statusSummaryPill.classList.toggle('offline', onlineCount === 0);
-            }
+      refreshButton.addEventListener('click', async function () {
+        refreshButton.disabled = true;
+        try {
+          var response = await fetchJson('/api/status/refresh', { method: 'POST' });
+          renderCurrent(response.current_status || []);
+          if (response.errors && response.errors.length) {
+            alert('Refresh failed on some hosts:\n' + response.errors.join('\n'));
+          }
+        } catch (error) {
+          alert('Refresh failed: ' + error.message);
+        } finally {
+          refreshButton.disabled = false;
+        }
+      });
 
-            function renderJobs(jobs) {
-                state.jobs = jobs;
-                if (!jobs.length) {
-                    els.jobsTableBody.innerHTML = '<tr><td colspan="8" class="text-muted text-center">No jobs returned.</td></tr>';
-                    return;
-                }
+      windowSelect.addEventListener('change', function () {
+        refreshAll().catch(function (error) {
+          alert('Failed to load history: ' + error.message);
+        });
+      });
 
-                var rows = jobs.map(function (job) {
-                    var jobId = job.job_id || job.jobId || job.pid || job.id || '-';
-                    var user = job.user || job.username || '-';
-                    var server = job.server || job.host || '-';
-                    var gpu = job.gpu || job.gpu_index || job.gpu_id || '-';
-                    var processName = job.process || job.command || job.name || '-';
-                    var status = job.status || job.state || 'running';
-                    var started = job.started_at || job.start_time || job.started || '-';
-                    return '' +
-                        '<tr>' +
-                        '<td>' + escapeHtml(String(jobId)) + '</td>' +
-                        '<td>' + escapeHtml(String(user)) + '</td>' +
-                        '<td>' + escapeHtml(String(server)) + '</td>' +
-                        '<td>' + escapeHtml(String(gpu)) + '</td>' +
-                        '<td>' + escapeHtml(String(processName)) + '</td>' +
-                        '<td>' + badgeForStatus(String(status)) + '</td>' +
-                        '<td>' + escapeHtml(String(started)) + '</td>' +
-                        '<td><button class="btn btn-sm btn-danger" data-action="kill-job" data-server="' + encodeURIComponent(String(server)) + '" data-job="' + encodeURIComponent(String(jobId)) + '">Kill</button></td>' +
-                        '</tr>';
-                }).join('');
+      logoutButton.addEventListener('click', async function () {
+        try {
+          await fetchJson('/api/session/logout', { method: 'POST' });
+        } catch (error) {
+          // ignore backend errors, still clear UI session state
+        }
+        state.username = '';
+        state.accessibleHosts = [];
+        renderCurrent([]);
+        renderGpuHistory([]);
+        renderUsers([]);
+        setMessage(accessMessage, 'Signed out (UI session cleared).', 'muted');
+      });
 
-                els.jobsTableBody.innerHTML = rows;
-            }
+      async function bootstrap() {
+        var config = getConfig();
+        document.getElementById('api-base-url').value = config.baseUrl;
+        document.getElementById('api-token').value = config.token;
+        renderHostTags(state.hostAliases);
+        if (!config.baseUrl) {
+          setMessage(configMsg, 'Set API Base URL to begin.', 'muted');
+          return;
+        }
+        try {
+          var session = await fetchJson('/api/session');
+          state.username = session.username || '';
+          state.accessibleHosts = session.accessible_hosts || [];
+          if (state.accessibleHosts.length) {
+            setMessage(accessMessage, 'Loaded existing session for ' + state.username + '.', 'success');
+            await refreshAll();
+          }
+        } catch (error) {
+          setMessage(configMsg, 'Backend reachable, but session is not active yet.', 'muted');
+        }
+      }
 
-            function badgeForStatus(status) {
-                var normalized = String(status || '').toLowerCase();
-                var color = 'secondary';
-                if (normalized.indexOf('run') !== -1 || normalized.indexOf('online') !== -1 || normalized.indexOf('up') !== -1 || normalized.indexOf('ok') !== -1) {
-                    color = 'success';
-                } else if (normalized.indexOf('pend') !== -1 || normalized.indexOf('queue') !== -1 || normalized.indexOf('wait') !== -1) {
-                    color = 'warning';
-                } else if (normalized.indexOf('down') !== -1 || normalized.indexOf('fail') !== -1 || normalized.indexOf('error') !== -1 || normalized.indexOf('kill') !== -1) {
-                    color = 'danger';
-                }
-                return '<span class="badge badge-' + color + '">' + escapeHtml(status || 'unknown') + '</span>';
-            }
-
-            function escapeHtml(str) {
-                return String(str)
-                    .replace(/&/g, '&amp;')
-                    .replace(/</g, '&lt;')
-                    .replace(/>/g, '&gt;')
-                    .replace(/"/g, '&quot;')
-                    .replace(/'/g, '&#39;');
-            }
-
-            function queryServers() {
-                var config = getConfigFromUI();
-                saveConfig();
-                var url = endpoint(config, config.statusPath);
-                addLog('Querying GPU servers: ' + url, 'info');
-
-                return fetch(url, {
-                    method: 'GET',
-                    headers: headersWithAuth(config)
-                })
-                    .then(ensureOk)
-                    .then(function (res) { return res.json(); })
-                    .then(function (json) {
-                        var servers = parseServerArray(json);
-                        renderServers(servers);
-                        addLog('Loaded ' + servers.length + ' server records.', 'success');
-                        return servers;
-                    })
-                    .catch(function (err) {
-                        addLog('Server query failed: ' + err.message, 'error');
-                        throw err;
-                    });
-            }
-
-            function queryJobs(serverName) {
-                var config = getConfigFromUI();
-                saveConfig();
-                var server = (serverName || els.jobsServerInput.value || '').trim();
-                if (!server) {
-                    throw new Error('Please provide a server name to query jobs.');
-                }
-
-                var url = endpoint(config, config.jobsPath) + '?server=' + encodeURIComponent(server);
-                addLog('Querying jobs for server "' + server + '": ' + url, 'info');
-
-                return fetch(url, {
-                    method: 'GET',
-                    headers: headersWithAuth(config)
-                })
-                    .then(ensureOk)
-                    .then(function (res) { return res.json(); })
-                    .then(function (json) {
-                        var jobs = parseJobArray(json);
-                        renderJobs(jobs);
-                        els.jobsServerInput.value = server;
-                        els.killServerInput.value = els.killServerInput.value || server;
-                        addLog('Loaded ' + jobs.length + ' jobs for server "' + server + '".', 'success');
-                        return jobs;
-                    })
-                    .catch(function (err) {
-                        addLog('Jobs query failed for server "' + server + '": ' + err.message, 'error');
-                        throw err;
-                    });
-            }
-
-            function killJob(serverName, jobId) {
-                var config = getConfigFromUI();
-                saveConfig();
-                var server = (serverName || els.killServerInput.value || '').trim();
-                var job = (jobId || els.killJobidInput.value || '').trim();
-                if (!server || !job) {
-                    throw new Error('Both server and job ID are required to kill a job.');
-                }
-
-                var url = endpoint(config, config.killPath);
-                var payload = {
-                    server: server,
-                    job_id: job
-                };
-
-                addLog('Sending kill request for job "' + job + '" on server "' + server + '".', 'warn');
-
-                return fetch(url, {
-                    method: 'POST',
-                    headers: headersWithAuth(config),
-                    body: JSON.stringify(payload)
-                })
-                    .then(ensureOk)
-                    .then(function (res) { return res.json().catch(function () { return {}; }); })
-                    .then(function () {
-                        addLog('Kill request sent for job "' + job + '" on server "' + server + '".', 'success');
-                    })
-                    .catch(function (err) {
-                        addLog('Kill job failed: ' + err.message, 'error');
-                        throw err;
-                    });
-            }
-
-            function sendEmail() {
-                var config = getConfigFromUI();
-                saveConfig();
-                var recipients = (els.mailToInput.value || '').trim();
-                var subject = (els.mailSubjectInput.value || '').trim();
-                var message = (els.mailBodyInput.value || '').trim();
-
-                if (!recipients || !subject || !message) {
-                    throw new Error('To, Subject, and Message are all required for email sending.');
-                }
-
-                var toList = recipients.split(',').map(function (item) {
-                    return item.trim();
-                }).filter(Boolean);
-
-                if (!toList.length) {
-                    throw new Error('No valid recipients found. Use comma-separated email addresses.');
-                }
-
-                var url = endpoint(config, config.mailPath);
-                var payload = {
-                    to: toList,
-                    subject: subject,
-                    body: message
-                };
-
-                addLog('Sending email to ' + toList.join(', ') + '.', 'info');
-
-                return fetch(url, {
-                    method: 'POST',
-                    headers: headersWithAuth(config),
-                    body: JSON.stringify(payload)
-                })
-                    .then(ensureOk)
-                    .then(function (res) { return res.json().catch(function () { return {}; }); })
-                    .then(function () {
-                        addLog('Email request sent successfully.', 'success');
-                    })
-                    .catch(function (err) {
-                        addLog('Send email failed: ' + err.message, 'error');
-                        throw err;
-                    });
-            }
-
-            function ensureOk(res) {
-                if (!res.ok) {
-                    return res.text().then(function (text) {
-                        var msg = text || ('HTTP ' + res.status + ' ' + res.statusText);
-                        throw new Error(msg);
-                    });
-                }
-                return res;
-            }
-
-            function wireEvents() {
-                els.saveConfigBtn.addEventListener('click', saveConfig);
-                els.resetConfigBtn.addEventListener('click', resetConfig);
-
-                els.queryServersBtn.addEventListener('click', function () {
-                    withButtonLoading(els.queryServersBtn, queryServers).catch(function () {});
-                });
-
-                els.queryJobsBtn.addEventListener('click', function () {
-                    withButtonLoading(els.queryJobsBtn, function () {
-                        return queryJobs();
-                    }).catch(function () {});
-                });
-
-                els.killJobBtn.addEventListener('click', function () {
-                    withButtonLoading(els.killJobBtn, function () {
-                        return killJob();
-                    }).catch(function () {});
-                });
-
-                els.sendMailBtn.addEventListener('click', function () {
-                    withButtonLoading(els.sendMailBtn, sendEmail).catch(function () {});
-                });
-
-                els.clearLogBtn.addEventListener('click', function () {
-                    els.logBox.innerHTML = '';
-                    addLog('Activity log cleared.', 'info');
-                });
-
-                els.serversTableBody.addEventListener('click', function (event) {
-                    var target = event.target;
-                    if (!(target instanceof HTMLElement)) {
-                        return;
-                    }
-
-                    if (target.dataset.action === 'fetch-jobs') {
-                        var server = decodeURIComponent(target.dataset.server || '');
-                        els.jobsServerInput.value = server;
-                        withButtonLoading(els.queryJobsBtn, function () {
-                            return queryJobs(server);
-                        }).catch(function () {});
-                    }
-                });
-
-                els.jobsTableBody.addEventListener('click', function (event) {
-                    var target = event.target;
-                    if (!(target instanceof HTMLElement)) {
-                        return;
-                    }
-
-                    if (target.dataset.action === 'kill-job') {
-                        var server = decodeURIComponent(target.dataset.server || '');
-                        var job = decodeURIComponent(target.dataset.job || '');
-                        els.killServerInput.value = server;
-                        els.killJobidInput.value = job;
-                        withButtonLoading(els.killJobBtn, function () {
-                            return killJob(server, job);
-                        }).then(function () {
-                            return queryJobs(server);
-                        }).catch(function () {});
-                    }
-                });
-            }
-
-            function bootstrap() {
-                loadConfig();
-                wireEvents();
-                addLog('GPU Monitor UI ready. Configure backend URL and query servers.', 'info');
-            }
-
-            bootstrap();
-        })();
-    </script>
+      bootstrap();
+    })();
+  </script>
 </body>
 </html>
