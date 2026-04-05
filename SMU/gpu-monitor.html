@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en-US">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#0f2d73">
+    <link rel="icon" href="../favicon.ico" sizes="any">
+    <link rel="icon" type="image/png" sizes="32x32" href="../favicon-32x32.png">
+    <link rel="apple-touch-icon" href="../apple-touch-icon.png">
+    <link rel="manifest" href="../site.webmanifest">
+    <title>GPU Monitor · LV-Lab @ SMU</title>
+
+    <link href="../css/bootstrap/bootstrap.min.css" rel="stylesheet">
+    <link href="../css/font-awesome.min.css" rel="stylesheet">
+    <link href="../assets/vendor/material-design-iconic-font/dist/css/material-design-iconic-font.min.css" rel="stylesheet">
+    <link href="../assets/css/theme.css" rel="stylesheet">
+    <style>
+        :root { --lv-blue: #003d7c; --lv-orange: #ee7023; }
+        body { margin: 0; background: #f7f9fc; }
+        .page-header { background: var(--lv-blue); color: white; padding: 12px 0; }
+        .page-header a { color: white; text-decoration: underline; }
+        .monitor-wrap { height: calc(100vh - 66px); }
+        .monitor-frame { width: 100%; height: 100%; border: 0; background: white; }
+    </style>
+</head>
+<body>
+    <div class="page-header">
+        <div class="container d-flex justify-content-between align-items-center">
+            <div><strong>GPU Monitor</strong> · LV-Lab @ SMU</div>
+            <div>
+                <a href="./index.html">Back to LV-Lab @ SMU</a>
+            </div>
+        </div>
+    </div>
+
+    <div class="monitor-wrap">
+        <iframe
+            class="monitor-frame"
+            src="https://lifuwang-66.github.io/GPUMonitor/"
+            title="GPU Monitor"
+            loading="eager"
+            referrerpolicy="no-referrer-when-downgrade">
+        </iframe>
+    </div>
+
+    <noscript>
+        <div class="container py-3">
+            JavaScript is required for the embedded monitor. You can also open it directly:
+            <a href="https://lifuwang-66.github.io/GPUMonitor/" target="_blank" rel="noopener noreferrer">GPUMonitor</a>.
+        </div>
+    </noscript>
+</body>
+</html>
