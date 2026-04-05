@@ -168,7 +168,7 @@
   <main class="layout">
     <section class="panel auth-panel">
       <h2>Backend Configuration</h2>
-      <p class="muted">Set the API base URL first (e.g. <code>https://your-monitor.example.com</code>). Saved in browser local storage.</p>
+      <p class="muted">Optional: set API base URL (e.g. <code>http://localhost:8000</code>). Leave blank to call the same origin as this page. Saved in browser local storage.</p>
       <div class="setup-grid">
         <label>API Base URL
           <input id="api-base-url" type="url" placeholder="https://gpu-monitor-api.example.com">
@@ -304,10 +304,8 @@
 
       function apiUrl(path) {
         var config = getConfig();
-        if (!config.baseUrl) {
-          throw new Error('Please set API Base URL first.');
-        }
-        return config.baseUrl + path;
+        var baseUrl = config.baseUrl || window.location.origin;
+        return baseUrl + path;
       }
 
       function authHeaders(extra) {
@@ -664,8 +662,7 @@
         document.getElementById('api-token').value = config.token;
         renderHostTags(state.hostAliases);
         if (!config.baseUrl) {
-          setMessage(configMsg, 'Set API Base URL to begin.', 'muted');
-          return;
+          setMessage(configMsg, 'Using same-origin API. Set API Base URL only if backend is on another host/port.', 'muted');
         }
         try {
           var session = await fetchJson('/api/session');
