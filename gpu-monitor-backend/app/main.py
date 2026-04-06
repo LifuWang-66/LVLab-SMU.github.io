@@ -104,7 +104,7 @@ def resolve_hosts_from_collector_view(username: str, fallback_hosts: list[str]) 
 @app.get('/', response_class=HTMLResponse)
 def home(request: Request):
     del request
-    return FileResponse(SITE_ROOT / 'SMU' / 'index.html')
+    return FileResponse(SITE_ROOT / 'index.html')
 
 
 @app.get('/gpu-monitor', response_class=HTMLResponse)
@@ -280,3 +280,19 @@ def api_test_policy_email(payload: TestPolicyEmailRequest, request: Request, db:
         simulated_max_utilization=payload.simulated_max_utilization,
         detail='Policy-style test email sent.',
     )
+
+
+@app.get('/{requested_path:path}')
+def site_file_fallback(requested_path: str):
+    if requested_path.startswith('api/'):
+        raise HTTPException(status_code=404, detail='Not found')
+
+    target = (SITE_ROOT / requested_path).resolve()
+    if not str(target).startswith(str(SITE_ROOT.resolve())):
+        raise HTTPException(status_code=404, detail='Not found')
+
+    if target.is_dir():
+        target = target / 'index.html'
+    if target.exists() and target.is_file():
+        return FileResponse(target)
+    raise HTTPException(status_code=404, detail='Not found')
