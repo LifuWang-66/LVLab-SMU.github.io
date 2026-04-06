@@ -1,13 +1,13 @@
 from __future__ import annotations
 
 from contextlib import asynccontextmanager
+from pathlib import Path
 
 from apscheduler.schedulers.background import BackgroundScheduler
 from fastapi import Depends, FastAPI, Form, HTTPException, Request
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import HTMLResponse, RedirectResponse
+from fastapi.responses import FileResponse, HTMLResponse, RedirectResponse
 from fastapi.staticfiles import StaticFiles
-from fastapi.templating import Jinja2Templates
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 from starlette.middleware.sessions import SessionMiddleware
@@ -63,7 +63,22 @@ app = FastAPI(title=settings.app_name, lifespan=lifespan)
 app.add_middleware(SessionMiddleware, secret_key=settings.secret_key)
 app.add_middleware(CORSMiddleware, allow_origins=['*'], allow_credentials=True, allow_methods=['*'], allow_headers=['*'])
 app.mount('/static', StaticFiles(directory='app/static'), name='static')
-templates = Jinja2Templates(directory='app/templates')
+SITE_ROOT = Path(__file__).resolve().parents[2]
+
+if (SITE_ROOT / 'assets').exists():
+    app.mount('/assets', StaticFiles(directory=SITE_ROOT / 'assets'), name='site-assets')
+if (SITE_ROOT / 'css').exists():
+    app.mount('/css', StaticFiles(directory=SITE_ROOT / 'css'), name='site-css')
+if (SITE_ROOT / 'js').exists():
+    app.mount('/js', StaticFiles(directory=SITE_ROOT / 'js'), name='site-js')
+if (SITE_ROOT / 'images').exists():
+    app.mount('/images', StaticFiles(directory=SITE_ROOT / 'images'), name='site-images')
+if (SITE_ROOT / 'fonts').exists():
+    app.mount('/fonts', StaticFiles(directory=SITE_ROOT / 'fonts'), name='site-fonts')
+if (SITE_ROOT / 'SMU').exists():
+    app.mount('/SMU', StaticFiles(directory=SITE_ROOT / 'SMU', html=True), name='site-smu')
+if (SITE_ROOT / 'nus').exists():
+    app.mount('/nus', StaticFiles(directory=SITE_ROOT / 'nus', html=True), name='site-nus')
 
 
 def get_allowed_hosts(request: Request) -> list[str]:
@@ -88,18 +103,14 @@ def resolve_hosts_from_collector_view(username: str, fallback_hosts: list[str]) 
 
 @app.get('/', response_class=HTMLResponse)
 def home(request: Request):
-    return templates.TemplateResponse(
-        request,
-        'index.html',
-        {
-            'app_name': settings.app_name,
-            'host_aliases': settings.hosts,
-            'history_windows': settings.allowed_history_windows,
-            'session_username': request.session.get('username'),
-            'session_email': request.session.get('email'),
-            'accessible_hosts': request.session.get('accessible_hosts', []),
-        },
-    )
+    del request
+    return FileResponse(SITE_ROOT / 'SMU' / 'index.html')
+
+
+@app.get('/gpu-monitor', response_class=HTMLResponse)
+def gpu_monitor_page(request: Request):
+    del request
+    return FileResponse(SITE_ROOT / 'SMU' / 'gpu-monitor.html')
 
 
 @app.post('/api/session/access', response_model=list[HostAccessResult])

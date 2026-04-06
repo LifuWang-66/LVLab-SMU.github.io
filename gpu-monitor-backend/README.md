@@ -97,6 +97,12 @@ uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
 http://127.0.0.1:8000
 ```
 
+现在 `http://127.0.0.1:8000/` 会直接显示原始 SMU Lab 页面（与静态站点同一 UI），GPU Monitor 页面可通过：
+
+```text
+http://127.0.0.1:8000/SMU/gpu-monitor.html
+```
+
 如果你是从其它机器访问部署机，可以打开：
 
 ```text
