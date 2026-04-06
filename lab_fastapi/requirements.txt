@@ -1,2 +1,1 @@
-fastapi>=0.111
-uvicorn[standard]>=0.30
+-r ../gpu-monitor-backend/requirements.txt

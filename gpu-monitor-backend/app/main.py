@@ -62,7 +62,7 @@ async def lifespan(_: FastAPI):
 app = FastAPI(title=settings.app_name, lifespan=lifespan)
 app.add_middleware(SessionMiddleware, secret_key=settings.secret_key)
 app.add_middleware(CORSMiddleware, allow_origins=['*'], allow_credentials=True, allow_methods=['*'], allow_headers=['*'])
-app.mount('/static', StaticFiles(directory='app/static'), name='static')
+app.mount('/static', StaticFiles(directory=Path(__file__).resolve().parent / 'static'), name='static')
 SITE_ROOT = Path(__file__).resolve().parents[2]
 
 if (SITE_ROOT / 'assets').exists():

@@ -1,6 +1,10 @@
-# LV-Lab FastAPI Site Runner
+# LV-Lab Unified FastAPI Runner
 
-This app serves the existing LV-Lab website (SMU + NUS pages and all static assets) using FastAPI.
+This entrypoint runs **one FastAPI service** that includes:
+
+- the original LV-Lab pages (SMU + NUS),
+- the GPU monitor page UI,
+- the GPU monitor backend APIs (`/api/*`) and session logic.
 
 ## Run locally
 
@@ -16,7 +20,9 @@ Then open:
 - `http://127.0.0.1:8080/` (SMU homepage)
 - `http://127.0.0.1:8080/SMU/`
 - `http://127.0.0.1:8080/nus/`
-- `http://127.0.0.1:8080/SMU/gpu-monitor.html`
+- `http://127.0.0.1:8080/SMU/gpu-monitor.html` (GPU monitor UI)
+- `http://127.0.0.1:8080/gpu-monitor` (GPU monitor shortcut route)
+- `http://127.0.0.1:8080/api/session` (GPU monitor backend API)
 
 ## Production command
 
