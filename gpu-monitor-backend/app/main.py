@@ -14,7 +14,7 @@ from sqlalchemy.orm import Session
 from starlette.middleware.sessions import SessionMiddleware
 
 from app.config import get_settings
-from app.db import Base, SessionLocal, engine, get_db
+from app.db import Base, SessionLocal, commit_with_retry, engine, get_db
 from app.models import Host, UserProfile
 from app.schemas import (
     CredentialCheckRequest,
@@ -141,7 +141,7 @@ def create_access_session(payload: CredentialCheckRequest, request: Request, db:
         raise HTTPException(status_code=400, detail='Email is required because this user does not have an email on file.')
     elif input_email and input_email != profile_email:
         profile.email = input_email
-    db.commit()
+    commit_with_retry(db)
 
     credentials = SshCredentials(username=normalized_username, password=payload.password, use_agent=payload.use_agent)
     results: list[HostAccessResult] = []
