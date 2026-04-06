@@ -161,7 +161,7 @@ def create_access_session_form(
         request,
         db,
     )
-    return RedirectResponse(url='/', status_code=303)
+    return RedirectResponse(url='/gpu-monitor', status_code=303)
 
 
 @app.post('/api/session/logout', response_model=SessionResponse)
