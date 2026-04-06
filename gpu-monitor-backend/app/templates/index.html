@@ -3,20 +3,23 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>GPU Monitor</title>
-    <link rel="stylesheet" href="../gpu-monitor-backend/app/static/styles.css" />
+    <title>{{ app_name }}</title>
+    <link rel="stylesheet" href="{{ url_for('static', path='/styles.css') }}" />
   </head>
   <body>
     <header class="page-header">
       <div>
         <p class="eyebrow">GPU Monitor</p>
-        <h1>GPU Monitor</h1>
+        <h1>{{ app_name }}</h1>
       </div>
       <div class="header-actions">
+        {% if session_username %}
         <div class="session-card">
-          <span>Current user: Not logged in</span>
-          <span>Accessible hosts: 0</span>
+          <span>Current user: {{ session_username }}</span>
+          <span>Accessible hosts: {{ accessible_hosts | length }}</span>
+          <button id="logout-button" class="secondary">Sign out</button>
         </div>
+        {% endif %}
       </div>
     </header>
 
@@ -27,11 +30,11 @@
         <form id="access-form" method="post" action="/session/access">
           <label>
             Username
-            <input name="username" required placeholder="e.g. jinyang" value="" />
+            <input name="username" required placeholder="e.g. jinyang" value="{{ session_username or '' }}" />
           </label>
           <label>
             Email
-            <input name="email" type="email" placeholder="Required on first login; optional later to keep current email" value="" />
+            <input name="email" type="email" placeholder="Required on first login; optional later to keep current email" value="{{ session_email or '' }}" />
           </label>
           <label>
             Password
@@ -40,11 +43,9 @@
           <button type="submit">Validate and enter dashboard</button>
         </form>
         <div class="host-tags">
-          <span>PZU-104-165 · 10.193.104.165</span>
-          <span>PZU-104-170 · 10.193.104.170</span>
-          <span>PZU-104-181 · 10.193.104.181</span>
-          <span>PZU-104-182 · 10.193.104.182</span>
-          <span>PZU-104-186 · 10.193.104.186</span>
+          {% for host in host_aliases %}
+          <span>{{ host.name }} · {{ host.address }}</span>
+          {% endfor %}
         </div>
       </section>
 
@@ -70,10 +71,9 @@
             <label>
               Time range
               <select id="window-select">
-                <option value="7">7 days</option>
-                <option value="14">14 days</option>
-                <option value="20">20 days</option>
-                <option value="30" selected>30 days</option>
+                {% for window in history_windows %}
+                <option value="{{ window }}" {% if window == 30 %}selected{% endif %}>{{ window }} days</option>
+                {% endfor %}
               </select>
             </label>
           </div>
@@ -103,10 +103,10 @@
 
     <script>
       window.GPU_MONITOR_BOOTSTRAP = {
-        sessionUsername: '',
-        accessibleHosts: [],
+        sessionUsername: {{ (session_username or '') | tojson }},
+        accessibleHosts: {{ accessible_hosts | tojson }},
       };
     </script>
-    <script src="../gpu-monitor-backend/app/static/app.js"></script>
+    <script src="{{ url_for('static', path='/app.js') }}"></script>
   </body>
 </html>
