@@ -8,6 +8,7 @@ from fastapi import Depends, FastAPI, Form, HTTPException, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse, HTMLResponse, RedirectResponse
 from fastapi.staticfiles import StaticFiles
+from fastapi.templating import Jinja2Templates
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 from starlette.middleware.sessions import SessionMiddleware
@@ -62,7 +63,9 @@ async def lifespan(_: FastAPI):
 app = FastAPI(title=settings.app_name, lifespan=lifespan)
 app.add_middleware(SessionMiddleware, secret_key=settings.secret_key)
 app.add_middleware(CORSMiddleware, allow_origins=['*'], allow_credentials=True, allow_methods=['*'], allow_headers=['*'])
-app.mount('/static', StaticFiles(directory=Path(__file__).resolve().parent / 'static'), name='static')
+BACKEND_ROOT = Path(__file__).resolve().parent
+app.mount('/static', StaticFiles(directory=BACKEND_ROOT / 'static'), name='static')
+templates = Jinja2Templates(directory=str(BACKEND_ROOT / 'templates'))
 SITE_ROOT = Path(__file__).resolve().parents[2]
 
 if (SITE_ROOT / 'assets').exists():
@@ -109,8 +112,18 @@ def home(request: Request):
 
 @app.get('/gpu-monitor', response_class=HTMLResponse)
 def gpu_monitor_page(request: Request):
-    del request
-    return FileResponse(SITE_ROOT / 'SMU' / 'gpu-monitor.html')
+    return templates.TemplateResponse(
+        request,
+        'index.html',
+        {
+            'app_name': settings.app_name,
+            'host_aliases': settings.hosts,
+            'history_windows': settings.allowed_history_windows,
+            'session_username': request.session.get('username'),
+            'session_email': request.session.get('email'),
+            'accessible_hosts': request.session.get('accessible_hosts', []),
+        },
+    )
 
 
 @app.post('/api/session/access', response_model=list[HostAccessResult])
