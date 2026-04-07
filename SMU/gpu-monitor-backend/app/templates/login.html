@@ -17,7 +17,7 @@
     <main class="layout" style="grid-template-columns: 1fr; max-width: 760px; margin: 0 auto;">
       <section class="panel auth-panel">
         <h2>Login</h2>
-        <p>Enter your Linux account and email. The system will validate host access, then enter dashboard.</p>
+        <p>Enter your Linux account to validate access and enter dashboard. Email is required only on first login.</p>
         <form id="access-form" method="post" action="/session/access">
           <label>
             Username
@@ -25,7 +25,7 @@
           </label>
           <label>
             Email
-            <input name="email" type="email" required placeholder="you@smu.edu.sg" />
+            <input name="email" type="email" placeholder="you@smu.edu.sg" />
           </label>
           <label>
             Password
@@ -33,11 +33,6 @@
           </label>
           <button type="submit">Validate and enter dashboard</button>
         </form>
-        <div class="host-tags">
-          {% for host in host_aliases %}
-          <span>{{ host.name }} · {{ host.address }}</span>
-          {% endfor %}
-        </div>
       </section>
     </main>
   </body>

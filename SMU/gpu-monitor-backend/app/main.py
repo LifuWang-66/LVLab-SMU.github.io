@@ -118,7 +118,6 @@ def gpu_monitor_login_page(request: Request):
         'login.html',
         {
             'app_name': settings.app_name,
-            'host_aliases': settings.hosts,
         },
     )
 
@@ -146,13 +145,15 @@ def create_access_session(payload: CredentialCheckRequest, request: Request, db:
     normalized_username = payload.username.strip()
     profile = db.scalar(select(UserProfile).where(UserProfile.username == normalized_username))
     input_email = (payload.email or '').strip() or None
-    if not input_email:
-        raise HTTPException(status_code=400, detail='Email is required to login.')
     profile_email = (profile.email or '').strip() if profile else ''
     if profile is None:
+        if not input_email:
+            raise HTTPException(status_code=400, detail='Email is required the first time this user logs in.')
         profile = UserProfile(username=normalized_username, email=input_email)
         db.add(profile)
-    elif input_email != profile_email:
+    elif not profile_email and not input_email:
+        raise HTTPException(status_code=400, detail='Email is required because this user does not have an email on file.')
+    elif input_email and input_email != profile_email:
         profile.email = input_email
     commit_with_retry(db)
 
@@ -177,7 +178,7 @@ def create_access_session(payload: CredentialCheckRequest, request: Request, db:
 def create_access_session_form(
     request: Request,
     username: str = Form(...),
-    email: str = Form(...),
+    email: str = Form(default=''),
     password: str = Form(default=''),
     use_agent: bool = Form(default=False),
     db: Session = Depends(get_db),
