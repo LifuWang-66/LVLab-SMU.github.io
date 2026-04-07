@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>{{ app_name }} Login</title>
+    <title>{{ app_name }} Email</title>
     <link rel="stylesheet" href="{{ url_for('static', path='/styles.css') }}" />
   </head>
   <body>
@@ -16,18 +16,14 @@
 
     <main class="layout" style="grid-template-columns: 1fr; max-width: 760px; margin: 0 auto;">
       <section class="panel auth-panel">
-        <h2>Login</h2>
-        <p>Enter your Linux account to validate access and enter dashboard.</p>
-        <form id="access-form" method="post" action="/session/access">
+        <h2>Email required</h2>
+        <p>User <strong>{{ pending_username }}</strong> does not have an email in database. Please enter one to continue.</p>
+        <form method="post" action="/session/email">
           <label>
-            Username
-            <input name="username" required placeholder="e.g. jinyang" />
+            Email
+            <input name="email" type="email" required placeholder="you@smu.edu.sg" />
           </label>
-          <label>
-            Password
-            <input name="password" type="password" placeholder="Leave empty if SSH key is already configured" />
-          </label>
-          <button type="submit">Validate and enter dashboard</button>
+          <button type="submit">Save email and enter dashboard</button>
         </form>
       </section>
     </main>

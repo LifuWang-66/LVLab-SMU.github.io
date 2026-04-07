@@ -122,6 +122,21 @@ def gpu_monitor_login_page(request: Request):
     )
 
 
+@app.get('/gpu-monitor/email', response_class=HTMLResponse)
+def gpu_monitor_email_page(request: Request):
+    pending_username = (request.session.get('pending_username') or '').strip()
+    if not pending_username:
+        return RedirectResponse(url='/gpu-monitor/login', status_code=303)
+    return templates.TemplateResponse(
+        request,
+        'email.html',
+        {
+            'app_name': settings.app_name,
+            'pending_username': pending_username,
+        },
+    )
+
+
 @app.get('/gpu-monitor', response_class=HTMLResponse)
 def gpu_monitor_page(request: Request):
     if not request.session.get('username') or not request.session.get('accessible_hosts'):
@@ -131,10 +146,8 @@ def gpu_monitor_page(request: Request):
         'index.html',
         {
             'app_name': settings.app_name,
-            'host_aliases': settings.hosts,
             'history_windows': settings.allowed_history_windows,
             'session_username': request.session.get('username'),
-            'session_email': request.session.get('email'),
             'accessible_hosts': request.session.get('accessible_hosts', []),
         },
     )
@@ -178,16 +191,53 @@ def create_access_session(payload: CredentialCheckRequest, request: Request, db:
 def create_access_session_form(
     request: Request,
     username: str = Form(...),
-    email: str = Form(default=''),
     password: str = Form(default=''),
     use_agent: bool = Form(default=False),
     db: Session = Depends(get_db),
 ):
+    normalized_username = username.strip()
+    profile = db.scalar(select(UserProfile).where(UserProfile.username == normalized_username))
+    profile_email = (profile.email or '').strip() if profile else ''
+
+    if profile_email:
+        create_access_session(
+            CredentialCheckRequest(username=normalized_username, email=profile_email, password=password or None, use_agent=use_agent),
+            request,
+            db,
+        )
+        return RedirectResponse(url='/gpu-monitor', status_code=303)
+
+    request.session['pending_username'] = normalized_username
+    request.session['pending_password'] = password or ''
+    request.session['pending_use_agent'] = use_agent
+    return RedirectResponse(url='/gpu-monitor/email', status_code=303)
+
+
+@app.post('/session/email')
+def complete_email_step(
+    request: Request,
+    email: str = Form(...),
+    db: Session = Depends(get_db),
+):
+    pending_username = (request.session.get('pending_username') or '').strip()
+    if not pending_username:
+        return RedirectResponse(url='/gpu-monitor/login', status_code=303)
+
+    pending_password = request.session.get('pending_password') or ''
+    pending_use_agent = bool(request.session.get('pending_use_agent'))
     create_access_session(
-        CredentialCheckRequest(username=username, email=email or None, password=password or None, use_agent=use_agent),
+        CredentialCheckRequest(
+            username=pending_username,
+            email=email.strip() or None,
+            password=pending_password or None,
+            use_agent=pending_use_agent,
+        ),
         request,
         db,
     )
+    request.session.pop('pending_username', None)
+    request.session.pop('pending_password', None)
+    request.session.pop('pending_use_agent', None)
     return RedirectResponse(url='/gpu-monitor', status_code=303)
 
 
