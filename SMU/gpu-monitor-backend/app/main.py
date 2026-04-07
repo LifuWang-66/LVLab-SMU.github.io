@@ -110,8 +110,23 @@ def home(request: Request):
     return FileResponse(SITE_ROOT / 'index.html')
 
 
+@app.get('/gpu-monitor/login', response_class=HTMLResponse)
+def gpu_monitor_login_page(request: Request):
+    request.session.clear()
+    return templates.TemplateResponse(
+        request,
+        'login.html',
+        {
+            'app_name': settings.app_name,
+            'host_aliases': settings.hosts,
+        },
+    )
+
+
 @app.get('/gpu-monitor', response_class=HTMLResponse)
 def gpu_monitor_page(request: Request):
+    if not request.session.get('username') or not request.session.get('accessible_hosts'):
+        return RedirectResponse(url='/gpu-monitor/login', status_code=303)
     return templates.TemplateResponse(
         request,
         'index.html',
@@ -131,15 +146,13 @@ def create_access_session(payload: CredentialCheckRequest, request: Request, db:
     normalized_username = payload.username.strip()
     profile = db.scalar(select(UserProfile).where(UserProfile.username == normalized_username))
     input_email = (payload.email or '').strip() or None
+    if not input_email:
+        raise HTTPException(status_code=400, detail='Email is required to login.')
     profile_email = (profile.email or '').strip() if profile else ''
     if profile is None:
-        if not input_email:
-            raise HTTPException(status_code=400, detail='Email is required the first time this user logs in.')
         profile = UserProfile(username=normalized_username, email=input_email)
         db.add(profile)
-    elif not profile_email and not input_email:
-        raise HTTPException(status_code=400, detail='Email is required because this user does not have an email on file.')
-    elif input_email and input_email != profile_email:
+    elif input_email != profile_email:
         profile.email = input_email
     commit_with_retry(db)
 
@@ -164,7 +177,7 @@ def create_access_session(payload: CredentialCheckRequest, request: Request, db:
 def create_access_session_form(
     request: Request,
     username: str = Form(...),
-    email: str = Form(default=''),
+    email: str = Form(...),
     password: str = Form(default=''),
     use_agent: bool = Form(default=False),
     db: Session = Depends(get_db),
