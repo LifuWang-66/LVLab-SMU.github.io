@@ -216,19 +216,22 @@ def create_access_session_form(
 @app.post('/session/email')
 def complete_email_step(
     request: Request,
-    email: str = Form(...),
+    email: str = Form(default=''),
     db: Session = Depends(get_db),
 ):
     pending_username = (request.session.get('pending_username') or '').strip()
     if not pending_username:
         return RedirectResponse(url='/gpu-monitor/login', status_code=303)
+    normalized_email = email.strip()
+    if not normalized_email:
+        return RedirectResponse(url='/gpu-monitor/email', status_code=303)
 
     pending_password = request.session.get('pending_password') or ''
     pending_use_agent = bool(request.session.get('pending_use_agent'))
     create_access_session(
         CredentialCheckRequest(
             username=pending_username,
-            email=email.strip() or None,
+            email=normalized_email,
             password=pending_password or None,
             use_agent=pending_use_agent,
         ),
