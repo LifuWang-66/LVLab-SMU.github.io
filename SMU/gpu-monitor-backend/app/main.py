@@ -191,13 +191,23 @@ def create_access_session(payload: CredentialCheckRequest, request: Request, db:
 def create_access_session_form(
     request: Request,
     username: str = Form(...),
+    email: str = Form(default=''),
     password: str = Form(default=''),
     use_agent: bool = Form(default=False),
     db: Session = Depends(get_db),
 ):
     normalized_username = username.strip()
+    normalized_email = email.strip()
     profile = db.scalar(select(UserProfile).where(UserProfile.username == normalized_username))
     profile_email = (profile.email or '').strip() if profile else ''
+
+    if normalized_email:
+        create_access_session(
+            CredentialCheckRequest(username=normalized_username, email=normalized_email, password=password or None, use_agent=use_agent),
+            request,
+            db,
+        )
+        return RedirectResponse(url='/gpu-monitor', status_code=303)
 
     if profile_email:
         create_access_session(

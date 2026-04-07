@@ -17,11 +17,15 @@
     <main class="layout" style="grid-template-columns: 1fr; max-width: 760px; margin: 0 auto;">
       <section class="panel auth-panel">
         <h2>Login</h2>
-        <p>Enter your Linux account to validate access and enter dashboard.</p>
+        <p>Enter your Linux account to validate access and enter dashboard. You can optionally provide a new email to update the one on file.</p>
         <form id="access-form" method="post" action="/session/access">
           <label>
             Username
             <input name="username" required placeholder="e.g. jinyang" />
+          </label>
+          <label>
+            Email (optional, update email on file)
+            <input name="email" type="email" placeholder="you@smu.edu.sg" />
           </label>
           <label>
             Password
